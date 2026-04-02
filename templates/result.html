@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wyniki skanowania</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Wyniki skanowania</h1>
+        <p class="subtitle">Sprawdz i popraw dane przed zapisem do CSV.</p>
+
+        <form action="{{ url_for('save') }}" method="post">
+            <div class="form-group">
+                <label for="name">Imie</label>
+                <input type="text" id="name" name="name" value="{{ data.name }}">
+            </div>
+            <div class="form-group">
+                <label for="surname">Nazwisko</label>
+                <input type="text" id="surname" name="surname" value="{{ data.surname }}">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="{{ data.email }}">
+            </div>
+            <div class="form-group">
+                <label for="phone">Telefon</label>
+                <input type="tel" id="phone" name="phone" value="{{ data.phone }}">
+            </div>
+            <div class="form-group">
+                <label for="company">Firma</label>
+                <input type="text" id="company" name="company" value="{{ data.company }}">
+            </div>
+            <div class="form-group">
+                <label for="position">Stanowisko</label>
+                <input type="text" id="position" name="position" value="{{ data.position }}">
+            </div>
+            <div class="form-group">
+                <label for="website">Strona www</label>
+                <input type="text" id="website" name="website" value="{{ data.website }}">
+            </div>
+
+            <div class="actions">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Wstecz</a>
+                <button type="submit" class="btn">Zapisz do CSV</button>
+            </div>
+        </form>
+
+        <details class="raw-text">
+            <summary>Surowy tekst OCR</summary>
+            <pre>{{ raw_text }}</pre>
+        </details>
+    </div>
+</body>
+</html>
