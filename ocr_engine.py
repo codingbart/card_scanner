@@ -8,7 +8,8 @@ def _configure_tesseract():
     """Point pytesseract to bundled tesseract binary when running from .app bundle."""
     if getattr(sys, 'frozen', False):
         bundle_dir = sys._MEIPASS
-        tess_bin = os.path.join(bundle_dir, 'tesseract', 'bin', 'tesseract')
+        exe_name = 'tesseract.exe' if sys.platform == 'win32' else 'tesseract'
+        tess_bin = os.path.join(bundle_dir, 'tesseract', 'bin', exe_name)
         tess_data = os.path.join(bundle_dir, 'tesseract', 'tessdata')
         if os.path.exists(tess_bin):
             pytesseract.pytesseract.tesseract_cmd = tess_bin
