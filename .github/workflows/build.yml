@@ -29,9 +29,10 @@ jobs:
 
       - name: Build exe
         run: |
+          python -c "import sys; print(sys.base_prefix)"
           pyinstaller run_desktop.py ^
             --name=CardScanner ^
-            --windowed ^
+            --console ^
             --onedir ^
             --noconfirm ^
             --add-data "templates;templates" ^
@@ -41,8 +42,18 @@ jobs:
             --add-data "C:\Program Files\Tesseract-OCR\tessdata\pol.traineddata;tesseract\tessdata" ^
             --hidden-import=pytesseract ^
             --hidden-import=PIL ^
-            --hidden-import=webview
+            --hidden-import=webview ^
+            --collect-all=webview
         shell: cmd
+
+      - name: Copy Python DLL to dist
+        run: |
+          copy "%PYTHON_PATH%\python312.dll" "dist\CardScanner\" 2>nul
+          copy "%PYTHON_PATH%\python3.dll" "dist\CardScanner\" 2>nul
+          dir dist\CardScanner\*.dll
+        shell: cmd
+        env:
+          PYTHON_PATH: ${{ env.pythonLocation }}
 
       - name: Upload Windows build
         uses: actions/upload-artifact@v4
