@@ -39,7 +39,8 @@ jobs:
             --noconfirm ^
             --add-data "templates;templates" ^
             --add-data "static;static" ^
-            --add-binary "C:\Program Files\Tesseract-OCR\tesseract.exe;tesseract\bin" ^
+            --add-binary "C:\Program Files\Tesseract-OCR\*.exe;tesseract\bin" ^
+            --add-binary "C:\Program Files\Tesseract-OCR\*.dll;tesseract\bin" ^
             --add-data "C:\Program Files\Tesseract-OCR\tessdata\eng.traineddata;tesseract\tessdata" ^
             --add-data "C:\Program Files\Tesseract-OCR\tessdata\pol.traineddata;tesseract\tessdata" ^
             --hidden-import=pytesseract ^
@@ -99,10 +100,11 @@ jobs:
             --add-data "$TESS_DATA/pol.traineddata:tesseract/tessdata" \
             --hidden-import=pytesseract \
             --hidden-import=PIL \
-            --hidden-import=webview
+            --hidden-import=webview \
+            --collect-all=webview
 
       - name: Zip macOS build
-        run: cd dist && zip -r ../CardScanner-macOS.zip CardScanner.app
+        run: cd dist && ditto -c -k --sequesterRsrc --keepParent CardScanner.app ../CardScanner-macOS.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

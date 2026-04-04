@@ -13,7 +13,10 @@ def _configure_tesseract():
         tess_data = os.path.join(bundle_dir, 'tesseract', 'tessdata')
         if os.path.exists(tess_bin):
             pytesseract.pytesseract.tesseract_cmd = tess_bin
+            # TESSDATA_PREFIX must point to the tessdata folder itself
             os.environ['TESSDATA_PREFIX'] = tess_data
+            # Also add tesseract/bin to PATH so DLLs can be found on Windows
+            os.environ['PATH'] = os.path.join(bundle_dir, 'tesseract', 'bin') + os.pathsep + os.environ.get('PATH', '')
 
 
 _configure_tesseract()
