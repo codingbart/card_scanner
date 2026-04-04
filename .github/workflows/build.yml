@@ -2,8 +2,11 @@ name: Build CardScanner
 
 on:
   push:
-    branches: [main]
+    tags: ['v*']
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build-windows:
@@ -29,7 +32,6 @@ jobs:
 
       - name: Build exe
         run: |
-          python -c "import sys; print(sys.base_prefix)"
           pyinstaller run_desktop.py ^
             --name=CardScanner ^
             --console ^
@@ -50,16 +52,18 @@ jobs:
         run: |
           copy "%PYTHON_PATH%\python312.dll" "dist\CardScanner\" 2>nul
           copy "%PYTHON_PATH%\python3.dll" "dist\CardScanner\" 2>nul
-          dir dist\CardScanner\*.dll
         shell: cmd
         env:
           PYTHON_PATH: ${{ env.pythonLocation }}
 
-      - name: Upload Windows build
+      - name: Zip Windows build
+        run: Compress-Archive -Path dist/CardScanner/* -DestinationPath CardScanner-Windows.zip
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: CardScanner-Windows
-          path: dist/CardScanner/
+          path: CardScanner-Windows.zip
 
   build-macos:
     runs-on: macos-latest
@@ -97,8 +101,27 @@ jobs:
             --hidden-import=PIL \
             --hidden-import=webview
 
-      - name: Upload macOS build
+      - name: Zip macOS build
+        run: cd dist && zip -r ../CardScanner-macOS.zip CardScanner.app
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: CardScanner-macOS
-          path: dist/CardScanner.app/
+          path: CardScanner-macOS.zip
+
+  release:
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: CardScanner ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            CardScanner-Windows/CardScanner-Windows.zip
+            CardScanner-macOS/CardScanner-macOS.zip
